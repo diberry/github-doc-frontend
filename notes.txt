@@ -1,0 +1,12 @@
+20200419 Authenticated Session full flow
+
+https://medium.appbase.io/securing-a-react-web-app-with-server-side-authentication-1b7c7dc55c16
+
+https://github.com/appbaseio-apps/todomvc-auth-client
+https://github.com/appbaseio-apps/todomvc-auth-server
+
+https://programmingwithmosh.com/react/localstorage-react/
+
+
+Load component with data with if first loads
+https://itnext.io/add-state-and-lifecycle-methods-to-function-components-with-react-hooks-8e2bdc44d43d
