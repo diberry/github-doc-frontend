@@ -10,7 +10,9 @@ import Login from "./login/login"
 import Callback from "./login/callback"
 import Home from "./home/Home"
 import FormGitHubFile from "./github/new-file-form"
-import User from './user/profile'
+import { Profile } from './user/profile'
+import { AppStatus }  from './app/appstatus'
+import { ClientConfig } from './app/clientconfig'
 
 // This site has 3 pages, all of which are rendered
 // dynamically in the browser (not server rendered).
@@ -21,7 +23,7 @@ import User from './user/profile'
 // making sure things like the back button and bookmarks
 // work properly.
 
-export function AppRouter() {
+export function AppRouter(props:any ) {
 
 
 const handleAuthentication = (nextState: any, replace: any) => {
@@ -29,10 +31,6 @@ const handleAuthentication = (nextState: any, replace: any) => {
       auth.handleAuthentication();
     }*/
     console.log("handleAuthentication")
-  }
-
-  const props = {
-      "hello":"goodbye"
   }
 
   return (
@@ -49,19 +47,18 @@ const handleAuthentication = (nextState: any, replace: any) => {
             <Link to="/note">Note</Link>
           </li>
           <li>
-            <User></User>
+              <AppStatus />
+          </li>
+          <li>
+            <ClientConfig config={props.config} />
+          </li>
+          <li>
+            <Profile config={props} />
           </li>
         </ul>
 
         <hr />
 
-        {/*
-          A <Switch> looks through all its children <Route>
-          elements and renders the first one whose path
-          matches the current URL. Use a <Switch> any time
-          you have multiple routes, but you want only one
-          of them to render at a time
-        */}
         <Switch>
           <Route exact path="/">
             <Home />
@@ -76,9 +73,7 @@ const handleAuthentication = (nextState: any, replace: any) => {
               handleAuthentication(props)
               return <Callback {...props}/>
           </Route>
-          <Route path="/profile">
-              <User />
-          </Route>
+
         </Switch>
       </div>
     </Router>
