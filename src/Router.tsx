@@ -13,6 +13,8 @@ import FormGitHubFile from "./github/new-file-form"
 import { Profile } from './user/profile'
 import { AppStatus }  from './app/appstatus'
 import { ClientConfig } from './app/clientconfig'
+import TelemetryProvider from './app/telemetry-provider';
+import { getAppInsights } from './app/TelemetryService';
 
 // This site has 3 pages, all of which are rendered
 // dynamically in the browser (not server rendered).
@@ -25,7 +27,8 @@ import { ClientConfig } from './app/clientconfig'
 
 export function AppRouter(props:any ) {
 
-
+  let appInsights = null;
+  
 const handleAuthentication = (nextState: any, replace: any) => {
     /*if (/access_token|id_token|error/.test(nextState.location.hash)) {
       auth.handleAuthentication();
@@ -35,6 +38,7 @@ const handleAuthentication = (nextState: any, replace: any) => {
 
   return (
     <Router>
+       <TelemetryProvider instrumentationKey="5f13dfc3-7b8f-4cbf-9de1-485131e5dfb3" after={() => { appInsights = getAppInsights() }}>
       <div>
         <ul>
           <li>
@@ -76,6 +80,7 @@ const handleAuthentication = (nextState: any, replace: any) => {
 
         </Switch>
       </div>
+      </TelemetryProvider>
     </Router>
   );
 }
