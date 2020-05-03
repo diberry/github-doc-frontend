@@ -6,22 +6,9 @@ export type DataContainer = {
 
 export function AppStatus(props: any) {
 
-    const [appStatus, setAppStatus] = useState("")
-
-
-    useEffect(() => {
-
-        getApplicationStatus().then((status: any) => {
-                status ? setAppStatus("Running") : setAppStatus("Offline")
-            }).catch(err=>{
-                console.log(`can't get user`)
-            })
-
-    }, [props]);
-
     return (
         <div className="container">
-            Application status: {appStatus}
+            Application status: {(props.status)? "Running": "Not running"}
         </div>
     )
 }

@@ -14,15 +14,37 @@ class TelemetryProvider extends Component {
     };
 
     componentDidMount() {
-        const {history} = this.props;
-        const {initialized} = this.state;
-        const AppInsightsInstrumentationKey = this.props.instrumentationKey; // PUT YOUR KEY HERE
-        if (!Boolean(initialized) && Boolean(AppInsightsInstrumentationKey) && Boolean(history)) {
-            ai.initialize(AppInsightsInstrumentationKey, history);
-            this.setState({initialized: true});
+
+        console.log(`telemetry-provider props ${this.props.instrumentationKey}`);
+
+        const key = (this.props && this.props.instrumentationKey) ? this.props.instrumentationKey : "";
+
+        if(!Boolean(key)) {
+            console.log(`telemetry-provider - key is empty`);
+        } else {
+
+            const {history} = this.props;
+            const {initialized} = this.state;
+
+            console.log(`telemetry-provider - assigning app insights key - ${key}`);
+
+            if (!Boolean(initialized) && Boolean(key) && Boolean(history)) {
+
+                ai.initialize(key, history);
+                this.setState({initialized: true});
+
+
+                this.props.after(ai);
+            } else {
+                console.log("telemetry-provider - can't start app Insights")
+
+                this.props.after();
+            }
+
+
         }
 
-        this.props.after();
+
     }
 
     render() {

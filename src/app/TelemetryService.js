@@ -1,4 +1,4 @@
-import {ApplicationInsights} from '@microsoft/applicationinsights-web';
+import {ApplicationInsights, SeverityLevel} from '@microsoft/applicationinsights-web';
 import {ReactPlugin} from '@microsoft/applicationinsights-react-js';
 
 let reactPlugin = null;
@@ -48,3 +48,4 @@ const createTelemetryService = () => {
 
 export const ai = createTelemetryService();
 export const getAppInsights = () => appInsights;
+export const Level = SeverityLevel;

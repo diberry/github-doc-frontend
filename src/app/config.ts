@@ -1,16 +1,10 @@
-import { getClientConfig, getServerStatus } from '../http'
+import { getClientConfig } from '../http'
 
 
-const getApplicationStatus = async ():Promise<boolean> => {
-    return await getServerStatus();
-}
-const getConfig = async () => {
-
-    const result = await getClientConfig();
-    return result;
+const getApplicationStatus = async ():Promise<any> => {
+    return await getClientConfig();
 }
 
 export {
-    getConfig,
     getApplicationStatus
 }

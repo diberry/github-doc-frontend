@@ -1,9 +1,15 @@
 # Change log
 
+## 0.1.3 - 2020/05/03
+
+* Refactor Telemetry (Application insights) from server config
+* DEBUG switch
+* app status and config fetched in one call
+
 ## 0.1.2 - 2020/04/30
 
 * Application Insights as telemetry provided add at the Router level
-* Question - if added at that level, what will it not catch? 
+* Question - if added at that level, what will it not catch?
 
 ## 0.1.1 - 2020/04/28
 
