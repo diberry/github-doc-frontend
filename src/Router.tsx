@@ -18,6 +18,7 @@ import { ClientConfig } from './app/clientconfig'
 import TelemetryProvider from './app/telemetry-provider';
 import { Level } from './app/TelemetryService';
 import { SeverityLevel, LoggingSeverity } from '@microsoft/applicationinsights-web';
+import { addProfile, ADD_PROFILE } from './storage/client/actions'
 
 
 // This site has 3 pages, all of which are rendered
@@ -64,12 +65,15 @@ export function AppRouter(props: any) {
     return vars[key];
   }
 
-  const authCallBackRoute = () => {
-    const code = getParameterByName("userName")
+  const authCallBackFromServerRoute = () => {
+    const user = getParameterByName("userName")
 
-    if(code){
-      console.log(`authCallBackRoute code = ${code}`)
-      return (<Callback userName={code} />)
+    if(user){
+
+      props.store.dispatch({type: ADD_PROFILE, package: {user}})
+
+      console.log(`store after add_profile = ${JSON.stringify(props.store.getState())}`)
+      return (<Home store={props.store} />)
     } else {
       return (<div>authentication failed</div>)
     }
@@ -115,7 +119,7 @@ export function AppRouter(props: any) {
     return (
       <Switch>
         <Route exact path="/">
-          <Home />
+          <Home store={props.store}/>
         </Route>
         <Route path="/login">
           <Login />
@@ -124,7 +128,7 @@ export function AppRouter(props: any) {
           <FormGitHubFile />
         </Route>
         <Route path="/callback">
-          {authCallBackRoute()}
+          {authCallBackFromServerRoute()}
         </Route>
       </Switch>)
   }

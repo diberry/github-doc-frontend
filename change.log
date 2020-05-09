@@ -1,5 +1,9 @@
 # Change log
 
+## 0.1.4 - Storage/State
+
+* Redux - very beginnings
+
 ## 0.1.3 - 2020/05/03
 
 * Refactor Telemetry (Application insights) from server config
