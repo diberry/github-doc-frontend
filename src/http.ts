@@ -64,8 +64,24 @@ const getUserProfile = async () => {
   }
 }
 
+const logoutUserSession = async () => {
+  try {
+    const request = getApiHttp()
+
+    const contents = await request({
+      method: 'GET',
+      url: `logout`
+    });
+
+    return (contents && contents.data) ? contents.data : null;
+  } catch (err) {
+
+  }
+}
+
 export {
   getUserProfile,
   getServerStatus,
-  getClientConfig
+  getClientConfig,
+  logoutUserSession
 }

@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 
 import Login from "./login/login"
+import Logout from "./login/logout"
 import Callback from "./login/callback"
 import Home from "./home/Home"
 import FormGitHubFile from "./github/new-file-form"
@@ -18,7 +19,7 @@ import { ClientConfig } from './app/clientconfig'
 import TelemetryProvider from './app/telemetry-provider';
 import { Level } from './app/TelemetryService';
 import { SeverityLevel, LoggingSeverity } from '@microsoft/applicationinsights-web';
-import { addProfile, ADD_PROFILE } from './storage/client/actions'
+import { addProfile } from './storage/client/actions'
 
 
 // This site has 3 pages, all of which are rendered
@@ -70,7 +71,7 @@ export function AppRouter(props: any) {
 
     if(user){
 
-      props.store.dispatch({type: ADD_PROFILE, package: {user}})
+      props.store.dispatch(addProfile(user))
 
       console.log(`store after add_profile = ${JSON.stringify(props.store.getState())}`)
       return (<Home store={props.store} />)
@@ -102,10 +103,16 @@ export function AppRouter(props: any) {
     return (
       <ul>
         <li>
-          <Link to="/">Home</Link>
+          <Link to="/">Root</Link>
+        </li>
+        <li>
+          <Link to="/home">Home</Link>
         </li>
         <li>
           <Link to="/login">Login</Link>
+        </li>
+        <li>
+          <Link to="/logout">Logout</Link>
         </li>
         <li>
           <Link to="/note">Note</Link>
@@ -121,11 +128,17 @@ export function AppRouter(props: any) {
         <Route exact path="/">
           <Home store={props.store}/>
         </Route>
+        <Route exact path="/home">
+          <Home store={props.store}/>
+        </Route>
         <Route path="/login">
-          <Login />
+          <Login store={props.store}/>
+        </Route>
+        <Route path="/logout">
+          <Logout store={props.store} />
         </Route>
         <Route path="/note">
-          <FormGitHubFile />
+          <FormGitHubFile store={props.store} />
         </Route>
         <Route path="/callback">
           {authCallBackFromServerRoute()}
