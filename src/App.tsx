@@ -7,8 +7,7 @@ import { Level, getAppInsights } from './app/TelemetryService';
 
 const DEBUG = false;
 
-/* props contains redux store */
-function App(props:any) {
+function App({store}:any) {
 
   const [config, setConfig] = useState(null);
   const [logger, setLogger] = useState(null);
@@ -63,7 +62,7 @@ function App(props:any) {
 
     const allLoadedScreen = () =>{
       console.log(`App allLoadedScreen...${JSON.stringify(config)}`)
-      return (<AppRouter store={props.store} logger={logger} loggerCallback={initializeLogger} config={config} ></AppRouter>)
+      return (<AppRouter logger={logger} loggerCallback={initializeLogger} config={config} store={store}></AppRouter>)
     }
 
   return (config) ? allLoadedScreen() : appLoadingScreen()

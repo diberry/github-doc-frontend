@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux'
 import {
   ADD_PROFILE,
-  REMOVE_PROFILE
+  REMOVE_PROFILE,
+  CREATE_NOTE
 } from './actions'
 
 
@@ -22,8 +23,21 @@ function profile(state = initialState, action:any) {
   }
 }
 
+function note(state = initialState, action:any) {
+  switch (action.type) {
+    case CREATE_NOTE:
+      console.log(`reducer note create ${JSON.stringify(action.package)}`)
+        return  Object.assign({}, state, action.package);
+    default:
+      console.log(`reducer profile default ${JSON.stringify(state)}`)
+      console.log(`reducer profile default acton ${JSON.stringify(action)}`)
+      return state
+  }
+}
+
 const gitHubNotesApp = combineReducers({
-  profile
+  profile,
+  note
 })
 
 export default gitHubNotesApp

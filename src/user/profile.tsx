@@ -7,7 +7,7 @@ export function Profile(props: any) {
 
     const renderComponent = () => {
 
-        const userStatusDisplay =  props.userName ? props.userName : <a href="/Login"></a>
+        const userStatusDisplay =  props.userName ? props.userName : <a href="/Login">Login</a>
 
         const displayUserProfile = <div>User status: {userStatusDisplay}</div>
 

@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { allActions } from '../storage/client/actions'
 
-export type DataContainer = {
-  data1: string
-}
 
 export function FormGitHubFile(formProps: any) {
 
-  const [data, setData] = useState({
-    data1: ""
-  } as DataContainer)
+  //@ts-ignore
+  const note = useSelector(state => state.note);
+  const dispatch = useDispatch()
+  const [htmlUrl, setHtmlUrl] = useState(null);
+
+  const formInfo = {
+    repoName:"test-public"
+  }
+
+  useEffect(() => {
+    dispatch(allActions.noteActions.createNote(formInfo))
+  }, [])
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -17,26 +25,43 @@ export function FormGitHubFile(formProps: any) {
     console.log("button clicked");
 
     // TBD: call submit function that should be send in with props to this component
-    formProps.onSubmit(data)
+    //formProps.onSubmit(data)
+    const repoNameElement = e.currentTarget.elements.namedItem('repoName') as HTMLInputElement
+
+    const newFormInfo = {
+      repoName: repoNameElement
+    }
+    dispatch(allActions.noteActions.createNote(newFormInfo))
   }
 
   const handleChangeEvent = (event:any)=>{
-    setData({
-        data1: event.target.value
-      } as DataContainer);
+    console.log(`change event ${event.target.value}`)
+
 }
+  const getHtmlUrl = () =>{
+    return (htmlUrl) ? <a href="${htmlUrl}"></a> : "";
+  }
+
   return (
     <div className="container">
 
         <form onSubmit={handleSubmit} noValidate={true}>
-        <input type="text" value={data.data1} onChange = {handleChangeEvent}></input><br />
+
+        <div>
+        <label>Repo</label>
+        <div>
+        <input type="text" name="repoName"></input><br />
+        </div>
+      </div>
+
         <button type="submit">Submit</button>
         </form>
-        <hr></hr>
-        <div>{JSON.stringify(data)}</div>
-        <hr></hr>
+        <hr>{getHtmlUrl()}</hr>
+
     </div>
   );
 }
 
-export default FormGitHubFile;
+//export default FormGitHubFile;
+
+export default FormGitHubFile

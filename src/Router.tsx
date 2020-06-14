@@ -20,7 +20,10 @@ import TelemetryProvider from './app/telemetry-provider';
 import { Level } from './app/TelemetryService';
 import { SeverityLevel, LoggingSeverity } from '@microsoft/applicationinsights-web';
 import { addProfile } from './storage/client/actions'
-
+import { useDispatch, useSelector } from "react-redux";
+import { allActions } from './storage/client/actions'
+import CreateNote from './appStoreContainers/createNote'
+import { Provider } from 'react-redux'
 
 // This site has 3 pages, all of which are rendered
 // dynamically in the browser (not server rendered).
@@ -31,7 +34,7 @@ import { addProfile } from './storage/client/actions'
 // making sure things like the back button and bookmarks
 // work properly.
 
-export function AppRouter(props: any) {
+export function AppRouter({logger, loggerCallback, config, store}: any) {
 
   const [logKey, setLogKey] = useState("");
   const [effectCount, setEffectCount] = useState(0)
@@ -40,20 +43,20 @@ export function AppRouter(props: any) {
 
     setEffectCount(effectCount + 1)
     //console.log(`AppRouter useEffect ...${JSON.stringify(props)}`)
-    if (props && props.config.AZURE && props.config.AZURE.APPLICATION_INSIGHTS_INSTRUMENTATION_KEY) {
-      console.log(`AppRouter useEffect setLogKey ${props.config.AZURE.APPLICATION_INSIGHTS_INSTRUMENTATION_KEY}`)
-      setLogKey(props.config.AZURE.APPLICATION_INSIGHTS_INSTRUMENTATION_KEY)
+    if (config.AZURE && config.AZURE.APPLICATION_INSIGHTS_INSTRUMENTATION_KEY) {
+      console.log(`AppRouter useEffect setLogKey ${config.AZURE.APPLICATION_INSIGHTS_INSTRUMENTATION_KEY}`)
+      setLogKey(config.AZURE.APPLICATION_INSIGHTS_INSTRUMENTATION_KEY)
     }
 
-    if (props && props.logger) {
-      props.logger.trackTrace(
+    if (logger) {
+      logger.trackTrace(
         {
           message: "Router appInsights running on FE",
           severityLevel: Level.Information
         });
     }
 
-  }, [props]);
+  }, [store]);
 
   function getParameterByName(key: any) {
     var vars = [], hash;
@@ -71,10 +74,10 @@ export function AppRouter(props: any) {
 
     if(user){
 
-      props.store.dispatch(addProfile(user))
+      store.dispatch(addProfile(user))
 
-      console.log(`store after add_profile = ${JSON.stringify(props.store.getState())}`)
-      return (<Home store={props.store} />)
+      //console.log(`store after add_profile = ${JSON.stringify(props.store.getState())}`)
+      return (<Home />)
     } else {
       return (<div>authentication failed</div>)
     }
@@ -86,13 +89,10 @@ export function AppRouter(props: any) {
       <div>
         <ul>
           <li>
-            <AppStatus status={((props === null) ? false : true)} />
+            <ClientConfig config={config} />
           </li>
           <li>
-            <ClientConfig config={props.config} />
-          </li>
-          <li>
-            <Profile config={props} />
+            <Profile config={JSON.stringify(store.getState())} />
           </li>
         </ul>
       </div>
@@ -126,19 +126,19 @@ export function AppRouter(props: any) {
     return (
       <Switch>
         <Route exact path="/">
-          <Home store={props.store}/>
+          <Home />
         </Route>
         <Route exact path="/home">
-          <Home store={props.store}/>
+          <Home/>
         </Route>
         <Route path="/login">
-          <Login store={props.store}/>
+          <Login />
         </Route>
         <Route path="/logout">
-          <Logout store={props.store} />
+          <Logout  />
         </Route>
         <Route path="/note">
-          <FormGitHubFile store={props.store} />
+          <CreateNote />
         </Route>
         <Route path="/callback">
           {authCallBackFromServerRoute()}
@@ -163,7 +163,7 @@ export function AppRouter(props: any) {
   const loggedNavAndContent = () => {
     return (
       <div>
-        <TelemetryProvider instrumentationKey={logKey} after={props.loggerCallback} status={props.status}>
+        <TelemetryProvider instrumentationKey={logKey} after={loggerCallback}>
           {navAndContent()}
         </TelemetryProvider>
       </div>
@@ -180,10 +180,12 @@ export function AppRouter(props: any) {
   }
 
   return (
+    <Provider store={store}>
     <Router>
 
       {renderPage()}
 
     </Router>
+    </Provider>
   );
 }

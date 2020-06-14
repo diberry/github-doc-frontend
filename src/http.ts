@@ -4,7 +4,7 @@ const getApiHttp = () => {
 
   let config = {
     baseURL: 'http://localhost:9000/api/',
-    timeout: 5000,
+    timeout: 60 * 1 * 1000, // 1 minute
     withCredentials: true
   }
 
@@ -79,9 +79,30 @@ const logoutUserSession = async () => {
   }
 }
 
+const addGitHubNote = async (body:any) => {
+  try {
+    const request = getApiHttp()
+
+    const contents = await request({
+      method: 'POST',
+      url: `github/note`,
+      data: body
+    });
+
+    const data =  (contents && contents.data) ? contents.data : null;
+
+    console.log(`http addGitHubNote data ${JSON.stringify(data)}`)
+
+    return data;
+  } catch (err) {
+    console.log(`http error ${JSON.stringify(err)}`)
+  }
+}
+
 export {
   getUserProfile,
   getServerStatus,
   getClientConfig,
-  logoutUserSession
+  logoutUserSession,
+  addGitHubNote
 }
