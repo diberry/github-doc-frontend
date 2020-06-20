@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { allActions } from '../storage/client/actions'
 import { addGitHubNote } from '../http'
+import { Field, reduxForm } from 'redux-form'
 
-const CreateNote = ({ dispatch }: any) => {
+const CreateNote = (props: any) => {
+
+  const { handleSubmit, pristine, reset, submitting } = props
 
   let input: any;
   const [commit, setCommit] = useState({
@@ -25,14 +28,16 @@ const CreateNote = ({ dispatch }: any) => {
 
   }, []);
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
+  const onSubmit = async (
+    formValues: any
   ): Promise<void> => {
-    e.preventDefault()
+
     console.log("button clicked");
+    console.log(`submitted formValues = ${JSON.stringify(formValues)}`)
 
     // TBD: call submit function that should be send in with props to this component
     //formProps.onSubmit(data)
+    /*
     const repoNameElement = e.currentTarget.elements.namedItem('repoName') as HTMLInputElement
     const repoOwnerElement = e.currentTarget.elements.namedItem('repoOwner') as HTMLInputElement
     const fileNameElement = e.currentTarget.elements.namedItem('fileName') as HTMLInputElement
@@ -57,10 +62,11 @@ const CreateNote = ({ dispatch }: any) => {
     }
 
     // send to state
-    //dispatch(allActions.noteActions.createNote(newFormInfo))
+    //props.dispatch(allActions.noteActions.createNote(newFormInfo))
     const response = await addGitHubNote(repoInfo)
 
     if(response?.data?.content) setCommit(response?.data?.content)
+    */
   }
 
   const getHtmlUrl = () =>{
@@ -71,9 +77,45 @@ const CreateNote = ({ dispatch }: any) => {
 
   }
 
+  const renderError = ({error, touched}:any)=> {
+    if(error && touched){
+      return (
+        <div>{error}</div>
+      )
+    }
+  }
+  const reduxFormRenderInput = ({ input, label, type, meta }:any) =>{
+
+    console.log(meta)
+
+    if (meta?.touched && meta?.error) console.log("show error")
+
+    return (
+      <div className="field error">
+        <label>{label}</label>
+        <input {...input} placeholder={label} type={type} autoComplete="on"/>
+        {renderError(meta)}
+      </div>
+    )
+  }
+
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={props.handleSubmit(onSubmit)} >
+
+        <Field
+          name="title"
+          label="Enter title"
+          type="text"
+          component={reduxFormRenderInput}
+          />
+
+        <Field
+          name="description"
+          label="Enter description"
+          type="text"
+          component={reduxFormRenderInput}
+          />
 
         <div>
           <label>Repo name</label>
@@ -125,13 +167,41 @@ const CreateNote = ({ dispatch }: any) => {
         </div>
 
 
-        <button type="submit">
+        <button type="submit" >
           Add Note
         </button>
+
       </form>
       <div><p>{getHtmlUrl()}</p></div>
     </div>
   )
 }
 
-export default connect()(CreateNote)
+const validate = (formValues:any) =>{
+
+  console.log("reduxFormValidate")
+
+  const errors = {
+    title:"",
+    description:""
+  }
+
+  if(!formValues.title){
+    errors.title="You must enter a title"
+  }
+  if(formValues?.title?.length < 3){
+    errors.title +="Title must be 3 chars of more"
+  }
+  if(!formValues.description){
+    errors.description="You must enter a title"
+  }
+
+  console.log(`reduxFormValidate errors = ${JSON.stringify(errors)}`)
+
+  return errors;
+}
+
+export default reduxForm({
+  form: 'noteCreate',
+  validate
+})(CreateNote)

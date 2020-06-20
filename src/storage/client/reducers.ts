@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import { reducer as formReducer } from 'redux-form'
 import {
   ADD_PROFILE,
   REMOVE_PROFILE,
@@ -8,7 +9,7 @@ import {
 
 const initialState = {
 }
-
+//TBD rename to profileReducer
 function profile(state = initialState, action:any) {
   switch (action.type) {
     case ADD_PROFILE:
@@ -22,7 +23,7 @@ function profile(state = initialState, action:any) {
       return state
   }
 }
-
+//TBD rename to noteReducer
 function note(state = initialState, action:any) {
   switch (action.type) {
     case CREATE_NOTE:
@@ -37,7 +38,8 @@ function note(state = initialState, action:any) {
 
 const gitHubNotesApp = combineReducers({
   profile,
-  note
+  note,
+  form: formReducer //required by redux-form
 })
 
 export default gitHubNotesApp
