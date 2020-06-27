@@ -1,17 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore } from 'redux';
+import store from './storage/client/index'
+
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import gitHubNotesApp from './storage/client/reducers'
 
-//@ts-ignore
-export const store = createStore(gitHubNotesApp, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 
-const printStore = (storeState:any ) =>console.log(`store = ${JSON.stringify(storeState)}`)
-console.log(`initial store = ${JSON.stringify(store.getState())}`)
-const unsubscribe = store.subscribe(() => printStore(store.getState()))
+
+
+
 ReactDOM.render(
   <React.StrictMode>
     <App store={store} />

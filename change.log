@@ -1,5 +1,17 @@
 # Change log
 
+## 0.1.7 - 2020/06/27 - Form-reducer with state
+
+* Add note using redux-form e2e works
+    * Used redux-form Field instead of HTML for input text
+    * Created actions/reducer state for form fields for async failure to server
+* Moved all redux store code into /src/storaage/client/index.ts
+
+* TBD - reset form - https://redux-form.com/6.0.0-alpha.4/docs/faq/howtoclear.md/
+* TBD - get repo info from profile
+* TBD - select file using browser file upload
+* TBD- add tests
+
 ## 0.1.6 - 2020/06/14
 
 * Change Redux

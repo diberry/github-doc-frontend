@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { allActions } from '../storage/client/actions'
 import { addGitHubNote } from '../http'
-import { Field, reduxForm } from 'redux-form'
+import { Field, reduxForm, formValueSelector, change } from 'redux-form'
+import { bindActionCreators } from 'redux';
+import addGitHubNoteServer from '../github/note';
+import { createNotePending, createNoteSuccess, createNoteError} from '../storage/client/reducers'
 
 const CreateNote = (props: any) => {
 
-  const { handleSubmit, pristine, reset, submitting } = props
+  const { handleSubmit, pristine, reset, submitting  } = props
+  const { createNoteError, createNoteSuccess, createNotePending } = props
 
   let input: any;
   const [commit, setCommit] = useState({
@@ -35,38 +39,33 @@ const CreateNote = (props: any) => {
     console.log("button clicked");
     console.log(`submitted formValues = ${JSON.stringify(formValues)}`)
 
-    // TBD: call submit function that should be send in with props to this component
-    //formProps.onSubmit(data)
-    /*
-    const repoNameElement = e.currentTarget.elements.namedItem('repoName') as HTMLInputElement
-    const repoOwnerElement = e.currentTarget.elements.namedItem('repoOwner') as HTMLInputElement
-    const fileNameElement = e.currentTarget.elements.namedItem('fileName') as HTMLInputElement
-    const fileContentElement = e.currentTarget.elements.namedItem('fileContent') as HTMLInputElement
-    const committerEmailElement = e.currentTarget.elements.namedItem('committeremail') as HTMLInputElement
-    const committerNameElement = e.currentTarget.elements.namedItem('committername') as HTMLInputElement
-    const commitMessageElement = e.currentTarget.elements.namedItem('commitmessage') as HTMLInputElement
+    const { createNoteSendNoteToServer } = props
 
+    const {
+      repoName,
+      repoOwner,
+      fileName,
+      fileContent,
+      committeremail,
+      committername,
+      commitmessage
+    } = formValues;
 
     const repoInfo = {
       repo: {
-        name: repoNameElement.value.trim(),
-        owner: repoOwnerElement.value.trim(),
-        path: fileNameElement.value.trim()
+        name: repoName.trim(),
+        owner: repoOwner.trim(),
+        path: fileName.trim()
       },
       commit: {
-        content: fileContentElement.value.trim(),
-        committername: committerNameElement.value.trim(),
-        committeremail: committerEmailElement.value.trim(),
-        commitmessage: commitMessageElement.value.trim()
+        content: fileContent.trim(),
+        committername: committername.trim(),
+        committeremail: committeremail.trim(),
+        commitmessage: commitmessage.trim()
       }
     }
 
-    // send to state
-    //props.dispatch(allActions.noteActions.createNote(newFormInfo))
-    const response = await addGitHubNote(repoInfo)
-
-    if(response?.data?.content) setCommit(response?.data?.content)
-    */
+    createNoteSendNoteToServer(repoInfo)
   }
 
   const getHtmlUrl = () =>{
@@ -104,96 +103,92 @@ const CreateNote = (props: any) => {
       <form onSubmit={props.handleSubmit(onSubmit)} >
 
         <Field
-          name="title"
-          label="Enter title"
+          name="repoName"
+          label="Enter repoName"
           type="text"
           component={reduxFormRenderInput}
           />
 
         <Field
-          name="description"
-          label="Enter description"
+          name="repoOwner"
+          label="Enter repoOwner"
           type="text"
           component={reduxFormRenderInput}
           />
-
-        <div>
-          <label>Repo name</label>
-          <div>
-            <input type="text" name="repoName"></input><br />
-          </div>
-        </div>
-
-        <div>
-          <label>Repo owner</label>
-          <div>
-            <input type="text" name="repoOwner"></input><br />
-          </div>
-        </div>
-
-        <div>
-          <label>File name</label>
-          <div>
-            <input type="text" name="fileName"></input><br />
-          </div>
-        </div>
-
-        <div>
-          <label>File content</label>
-          <div>
-            <input type="text" name="fileContent"></input><br />
-          </div>
-        </div>
-
-        <div>
-          <label>Commit Email</label>
-          <div>
-            <input type="text" name="committeremail"></input><br />
-          </div>
-        </div>
-
-        <div>
-          <label>Commit Name</label>
-          <div>
-            <input type="text" name="committername"></input><br />
-          </div>
-        </div>
-
-        <div>
-          <label>Commit Message</label>
-          <div>
-            <input type="text" name="commitmessage"></input><br />
-          </div>
-        </div>
-
+        <Field
+          name="fileName"
+          label="Enter fileName"
+          type="text"
+          component={reduxFormRenderInput}
+          />
+        <Field
+          name="fileContent"
+          label="Enter fileContent"
+          type="text"
+          component={reduxFormRenderInput}
+          />
+        <Field
+          name="committeremail"
+          label="Enter committeremail"
+          type="text"
+          component={reduxFormRenderInput}
+          />
+        <Field
+          name="committername"
+          label="Enter committername"
+          type="text"
+          component={reduxFormRenderInput}
+          />
+        <Field
+          name="commitmessage"
+          label="Enter commitmessage"
+          type="text"
+          component={reduxFormRenderInput}
+          />
 
         <button type="submit" >
           Add Note
         </button>
 
       </form>
-      <div><p>{getHtmlUrl()}</p></div>
+      <div>
+      <span >Pending {JSON.stringify(createNotePending)}</span><br></br>
+      <span >Error {JSON.stringify(createNoteError)}</span><br></br>
+      <span >Success {JSON.stringify(createNoteSuccess)}</span><br></br>
+      </div>
     </div>
   )
 }
 
+// validate form data
 const validate = (formValues:any) =>{
 
   console.log("reduxFormValidate")
 
   const errors = {
-    title:"",
-    description:""
+    repoName:"",
+    repoOwner:"",
+    fileName:"",
+    fileContent:"",
+    committeremail:"",
+    committername:"",
+    commitmessage:""
   }
 
-  if(!formValues.title){
-    errors.title="You must enter a title"
+  if(!formValues.repoName){
+    errors.repoName="You must enter a repoName"
   }
-  if(formValues?.title?.length < 3){
-    errors.title +="Title must be 3 chars of more"
+  //if(formValues?.title?.length < 3){
+  //  errors.title +="Title must be 3 chars of more"
+  //}
+  if(!formValues.repoOwner){
+    errors.repoOwner="You must enter a repoOwner"
   }
-  if(!formValues.description){
-    errors.description="You must enter a title"
+  if(!formValues.fileName){
+    errors.fileName="You must enter a fileName"
+  }
+  if(!formValues.fileContent){
+    errors.fileContent="You must enter a fileContent"
   }
 
   console.log(`reduxFormValidate errors = ${JSON.stringify(errors)}`)
@@ -201,7 +196,21 @@ const validate = (formValues:any) =>{
   return errors;
 }
 
+// bring in state of dispatch to server to create note
+const mapStateToProps = (state:any) => ({
+  createNoteError: createNoteError(state),
+  createNoteSuccess: createNoteSuccess(state),
+  createNotePending: createNotePending(state)
+})
+
+// bring in dispatch to server to create note
+const mapDispatchToProps = (dispatch:any) => bindActionCreators({
+  createNoteSendNoteToServer: addGitHubNoteServer
+}, dispatch)
+
 export default reduxForm({
   form: 'noteCreate',
   validate
-})(CreateNote)
+})(connect(
+  mapStateToProps,
+  mapDispatchToProps)(CreateNote))

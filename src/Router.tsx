@@ -12,7 +12,6 @@ import Login from "./login/login"
 import Logout from "./login/logout"
 import Callback from "./login/callback"
 import Home from "./home/Home"
-import FormGitHubFile from "./github/new-file-form"
 import { Profile } from './user/profile'
 import { AppStatus } from './app/appstatus'
 import { ClientConfig } from './app/clientconfig'

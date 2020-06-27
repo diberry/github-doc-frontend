@@ -96,6 +96,7 @@ const addGitHubNote = async (body:any) => {
     return data;
   } catch (err) {
     console.log(`http error ${JSON.stringify(err)}`)
+    throw err;
   }
 }
 
